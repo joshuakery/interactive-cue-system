@@ -32,6 +32,7 @@ dotenv.config();
 /* Includes for Google Admin SDK */
 const admin = require('firebase-admin');
 const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+console.log(serviceAccount);
 
 /* Google Admin SDK initialization */
 /* https://firebase.google.com/docs/admin/setup */
@@ -40,6 +41,7 @@ admin.initializeApp({
   databaseURL: process.env.GOOGLE_DATABASE_URL,
 });
 
+console.log('admin initialized');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
