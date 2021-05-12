@@ -21,7 +21,7 @@ class AdminPage extends Component {
 
     return (
       <div>
-        <Box m={2}>
+        <Box m={2} maxWidth="1000px" margin="auto">
           <CueControls />
           <Divider />
           <UsersControls authUser={this.props.authUser} />
