@@ -113,7 +113,7 @@ class CuesTable extends Component {
             this.state.changedCues[cue.uid] :
             _.cloneDeep(cue);
         changedCue[name] = value;
-        if (name == "number" && value != '') changedCue[name] = parseInt(value);
+        if (name === "number" && value !== '') changedCue[name] = parseInt(value);
 
         const changedCues = this.state.changedCues;
         changedCues[cue.uid] = changedCue;
@@ -127,13 +127,14 @@ class CuesTable extends Component {
         const { classes, } = this.props;
         return(
         <Box mt={4} mb={6}>
+            {loading && <div>Loading ...</div>}
+            {(cues.length > 0 && current_cue && Object.keys(current_cue).length > 0) && (
+            <div>
             <Box mb={2}>
                 <Typography variant="h4">
                     Cues
                 </Typography>
             </Box>
-            {loading && <div>Loading ...</div>}
-            {cues && (
             <TableContainer component={Paper}>
             <Table>
                 <TableHead>
@@ -165,7 +166,7 @@ class CuesTable extends Component {
                 {cues.map(cue => {
                     cue = changedCues[cue.uid] ? changedCues[cue.uid] : cue;
                     let highlightClass;
-                    if (current_cue.number == cue.number) highlightClass = classes.currentCue;
+                    if (current_cue.number === cue.number) highlightClass = classes.currentCue;
                     return (
                         <TableRow
                             key={cue.uid}
@@ -178,7 +179,7 @@ class CuesTable extends Component {
                             </TableCell>
                             <TableCell>
                                 <TextField
-                                    id="outlined-basic"
+                                    id={"cue-"+cue.number+"-number"}
                                     variant="outlined"
                                     name="number"
                                     type="text"
@@ -188,7 +189,7 @@ class CuesTable extends Component {
                             </TableCell>
                             <TableCell>
                                 <TextField
-                                    id="outlined-basic"
+                                    id={"cue-"+cue.number+"-note"}
                                     variant="outlined"
                                     name="note"
                                     type="text"
@@ -222,7 +223,8 @@ class CuesTable extends Component {
                 )}
                 </TableBody>
             </Table>
-            </TableContainer>   
+            </TableContainer>  
+            </div> 
             )}
         </Box>
         )

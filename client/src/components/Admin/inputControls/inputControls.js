@@ -10,11 +10,6 @@ import InputTable from './inputTable';
 import ClearInputButton from '../reset/clearInputButton';
 
 class InputControls extends Component {
-    constructor(props) {
-        super(props);
-
-    }
-
     render() {
         return(
             <div>

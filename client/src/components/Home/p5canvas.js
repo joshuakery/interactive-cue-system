@@ -85,7 +85,7 @@ class P5Canvas extends Component {
        */
       socket.on('moving', (action) => {
         const {id,name,data} = action;
-        if (name == 'line') {
+        if (name === 'line') {
           /* draw if (data.drawing) this is not the first point in the line */
           /* draw if (clients[id]) we have saved a preceding point in the line for this user */
           if (data.drawing && clients[id]) {
@@ -149,7 +149,7 @@ class P5Canvas extends Component {
     p.drawAction = action => {
       if (action == null) return;
       const { name, data } = action;
-      if (name == 'line') {
+      if (name === 'line') {
         data.forEach(l => {
           var deserialized = p.deserialize(l);
           p.drawLine(deserialized);
@@ -216,7 +216,7 @@ class P5Canvas extends Component {
      */
     p.mouseReleased = () => {
         drawing = false;
-        if (myLines.length == 0) return;
+        if (myLines.length === 0) return;
         const data = p.serialize(myLines);
         const action = {
           uid: userUID,

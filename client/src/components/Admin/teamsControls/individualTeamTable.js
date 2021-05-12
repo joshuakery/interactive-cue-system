@@ -78,7 +78,7 @@ const SubmitChangeButton = (props) => {
 }
 
 const TeamSwitch = (props) => {
-    const { teams, user, userUID, handleTeamChange } = props;
+    const { teams, user, handleTeamChange } = props;
     return (
         <RadioGroup
             row
@@ -131,7 +131,7 @@ const TeamTableBody = (props) => {
                         <TableCell align="right">
                             <SubmitChangeButton
                                 onClick={(e) => submitTeamChange(e, userUID, teamUID)}
-                                disabled={user.team == teamUID || (!user.team && teamUID == "unassigned")}
+                                disabled={user.team === teamUID || (!user.team && teamUID === "unassigned")}
                             />
                         </TableCell>
                     </TableRow>

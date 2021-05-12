@@ -17,11 +17,6 @@ import {
 
  
 class AdminPage extends Component {
-  constructor(props) {
-    super(props);
- 
-  }
-
   render() {
 
     return (

@@ -72,6 +72,11 @@ class HomePage extends Component {
   getCurrentCueHTML = () => {
     const { uid } = this.props.authUser;
     const { current_cue, user, team } = this.state;
+    if (!current_cue) {
+      console.log("Current cue configured. State:")
+      console.log(this.state);
+      return;
+    }
     if (cueHTML[current_cue.number]) {
       return cueHTML[current_cue.number](uid,user,team);
     }

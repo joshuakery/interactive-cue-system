@@ -5,10 +5,6 @@ import { withFirebase } from '../../Firebase';
 import ConfirmButton from './confirmButton';
 
 class ResetTeamsButton extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     removeUsersTeams = () => {
         this.props.firebase.users().once('value', snapshot => {
             const users = snapshot.val();

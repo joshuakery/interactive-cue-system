@@ -83,7 +83,7 @@ class SignInFormBase extends Component {
           <Grid container spacing={2} justify="center">
             <Grid item xs={12} container justify="center">
               <TextField
-                id="outlined-basic"
+                id="sign-in-email"
                 label="Email Address"
                 variant="outlined"
                 fullWidth={true}
@@ -95,7 +95,7 @@ class SignInFormBase extends Component {
             </Grid>
             <Grid item xs={12} container justify="center">
               <TextField
-                id="outlined-basic"
+                id="sign-in-password"
                 label="Password"
                 variant="outlined"
                 fullWidth={true}

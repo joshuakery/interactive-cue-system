@@ -1,7 +1,6 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import _ from "lodash";
 import axios from 'axios';
 
 const config = {
@@ -49,9 +48,12 @@ class Firebase {
      *
      */
     doSetCustomClaims = uid => {
+        console.log(`Setting custom claims for user: ${uid}`);
         this.user(uid).once('value', snapshot => {
+          console.log(`Found user ${uid} in database.`);
           const user = snapshot.val();
           const adminStatus = user.roles.ADMIN;
+          
     
           this.auth.currentUser.getIdToken()
           .then(function(idToken) {
@@ -62,9 +64,9 @@ class Firebase {
                 adminStatus: adminStatus
               },
               (data, status) => {
-                if (status == 'success' && data) {
+                if (status === 'success' && data) {
                   const json = JSON.parse(data);
-                  if (json && json.status == 'success') {
+                  if (json && json.status === 'success') {
                     // Force token refresh. The token claims will contain the additional claims.
                     this.auth.currentUser.getIdToken(true);
                   }
@@ -79,6 +81,9 @@ class Firebase {
             console.log(error);
           });
     
+        })
+        .catch(function(error) {
+          console.log(error);
         });
     }
 
@@ -109,13 +114,28 @@ class Firebase {
     onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
         if (authUser) {
-          this.user(authUser.uid).off(); // remove the existing listener, if it's there
           this.user(authUser.uid)
           //by making this 'on' instead of 'once' we also set a listener for db changes
           //so that we can respond to roles changes in the db
           //even if they haven't come into effect in the custom claims
+          //note: in effect, this only helps revoke permission to view the admin page
+          //if upgrading a user to admin status, they will have to sign out and in again to make changes
           .on('value', async snapshot => {
-            const dbUser = snapshot.val();
+            let dbUser = snapshot.val();
+
+            //failsafe in case user was created in Firebase console
+            if (!dbUser) {
+              console.log('no db user');
+              dbUser = {
+                username: '',
+                email: authUser.email,
+                roles: {
+                  ADMIN: false,
+                },
+              }
+              this.user(authUser.uid).set(dbUser);
+            }
+
             // default empty roles
             if (!dbUser.roles) {
                 dbUser.roles = {};

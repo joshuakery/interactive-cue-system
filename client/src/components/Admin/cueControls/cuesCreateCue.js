@@ -23,7 +23,7 @@ class CreateCueForm extends Component {
 
     onCreateCue = (event) => {
         event.preventDefault();
-        if (this.state.createCue.number == '') return;
+        if (this.state.createCue.number === '') return;
         this.props.firebase.cues()
         .push(this.state.createCue);
         this.setState({
@@ -31,7 +31,7 @@ class CreateCueForm extends Component {
                 number: '',
                 note: '',
             }
-        })
+        });
     }
    
     onCreateCueChange = event => {
@@ -40,7 +40,7 @@ class CreateCueForm extends Component {
 
         const newCue = this.state.createCue;
         newCue[name] = value;
-        if (name == "number" && value != '') newCue[name] = parseInt(value);
+        if (name === "number" && value !== '') newCue[name] = parseInt(value);
         this.setState({
             createCue: newCue,
         });
@@ -58,7 +58,7 @@ class CreateCueForm extends Component {
                 <Grid container spacing={1} item xs={12} sm={4}>
                     <Grid item xs={12}>
                         <TextField
-                            id="outlined-basic"
+                            id="create-cue-number"
                             variant="outlined"
                             label="NUMBER"
                             fullWidth={true}
@@ -71,7 +71,7 @@ class CreateCueForm extends Component {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            id="outlined-basic"
+                            id="create-cue-note"
                             variant="outlined"
                             label="NOTE"
                             fullWidth={true}

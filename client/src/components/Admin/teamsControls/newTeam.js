@@ -58,7 +58,7 @@ class NewTeamFormBase extends Component {
             <Grid container spacing={2}>
               <Grid item xs={12} container>
                 <TextField
-                  id="outlined-basic"
+                  id="create-team-name"
                   label="Team Name"
                   variant="outlined"
                   fullWidth={true}
@@ -70,7 +70,7 @@ class NewTeamFormBase extends Component {
               </Grid>
               <Grid item xs={12} container justify="center">
                 <TextField
-                  id="outlined-basic"
+                  id="create-team-primary"
                   label="Primary Color"
                   variant="outlined"
                   fullWidth={true}

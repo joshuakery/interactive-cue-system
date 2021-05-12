@@ -170,7 +170,7 @@ const UsersTableEditable = ({ users, onChangeRoles, handleUserChange, authUser }
             <TableCell>{uid}</TableCell>
             <TableCell>
               <TextField
-                  id="outlined-basic"
+                  id={`user-${uid}-email`}
                   variant="outlined"
                   name="email"
                   type="text"
@@ -180,7 +180,7 @@ const UsersTableEditable = ({ users, onChangeRoles, handleUserChange, authUser }
             </TableCell>
             <TableCell>
               <TextField
-                  id="outlined-basic"
+                  id={`user-${uid}-username`}
                   variant="outlined"
                   name="username"
                   type="text"
@@ -189,7 +189,7 @@ const UsersTableEditable = ({ users, onChangeRoles, handleUserChange, authUser }
               /> 
             </TableCell>
             <TableCell>
-              {uid != authUser.uid ?
+              {uid !== authUser.uid ?
               (           
               <Checkbox
                   inputProps={{ 'aria-label': 'primary checkbox' }}

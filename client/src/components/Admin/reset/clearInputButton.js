@@ -4,11 +4,7 @@ import { withFirebase } from '../../Firebase';
 
 import ConfirmButton from './confirmButton';
 
-class ResetCuesButton extends Component {
-    constructor(props) {
-        super(props);
-    }
-
+class ClearInputButton extends Component {
     clearInput = () => {
         this.props.firebase.allUserInput().set(null);
     }
@@ -27,4 +23,4 @@ class ResetCuesButton extends Component {
 
 export default compose(
     withFirebase,
-)(ResetCuesButton);
+)(ClearInputButton);

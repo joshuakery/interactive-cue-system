@@ -5,6 +5,7 @@ import _ from "lodash";
 
 import IndividualTeamTable from './individualTeamTable';
 import IndividualTeamControls from './individualTeamControls';
+import ResetTeamsButton from '../reset/resetTeams';
 
 import {
     Button,
@@ -23,6 +24,7 @@ class TeamsTable extends Component {
           teams: {},
           /* originalTeams keeps track of changes to teams, to disable/enable buttons when there is a change */
           originalTeams: {},
+          askToReset: false,
         };
     }
 
@@ -39,6 +41,13 @@ class TeamsTable extends Component {
          */
         this.props.firebase.teams().on('value', async (snapshot) => {
             const teams = snapshot.val();
+
+            if (!teams || !teams.unassigned) {
+                this.setState({
+                    askToReset: true,
+                });
+                return;
+            }
 
             /* set up teams object */
             Object.keys(teams).forEach(teamUID => {
@@ -65,6 +74,7 @@ class TeamsTable extends Component {
                 loading: false,
                 teams: teams,
                 originalTeams: _.cloneDeep(teams),
+                askToReset: false,
             });
         });
     }
@@ -129,7 +139,7 @@ class TeamsTable extends Component {
         const oldTeam = teams[oldTeamUID];
         const user = oldTeam.users[userUID];
         //do nothing if there will be no change
-        if (!user.team || oldTeamUID == user.team) return;
+        if (!user.team || oldTeamUID === user.team) return;
         //remove user from old team
         delete oldTeam.users[userUID];
         //add user to new team
@@ -151,7 +161,7 @@ class TeamsTable extends Component {
      *
      */
     removeTeam = teamUID => {
-        if (teamUID == "unassigned") return; //failsafe; should not happen ever
+        if (teamUID === "unassigned") return; //failsafe; should not happen ever
         const { teams, originalTeams } = this.state;
         const team = teams[teamUID];
         Object.keys(team.users).forEach(userUID => {
@@ -249,8 +259,18 @@ class TeamsTable extends Component {
     }
 
     render() {
-        const { loading, teams, originalTeams } = this.state;
+        const { loading, teams, originalTeams, askToReset } = this.state;
         return (
+            <div>
+            {askToReset && 
+            <div>
+                <Typography variant="h5">
+                    Teams missing default team. Reset teams to resolve.
+                </Typography>
+                <ResetTeamsButton />
+            </div>
+            }
+            {teams.unassigned &&
             <form onSubmit={(e) => this.submitAllTeamsChanges(e)}>
             <Box mt={4} mb={6}>
 
@@ -312,6 +332,8 @@ class TeamsTable extends Component {
                 
             </Box>
             </form>
+            }
+            </div>
         );
     }
 

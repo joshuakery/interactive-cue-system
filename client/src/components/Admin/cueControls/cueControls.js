@@ -10,12 +10,7 @@ import {
 } from '@material-ui/core';
 
 class CueControls extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
-        console.log(this.props);
         return (
             <Box mt={4} mb={4}>
                 <MainControls />

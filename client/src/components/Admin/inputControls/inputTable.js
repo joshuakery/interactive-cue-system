@@ -8,10 +8,6 @@ import {
 } from '@material-ui/core';
 
 class InputTable extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <Box mt={4} mb={6}>

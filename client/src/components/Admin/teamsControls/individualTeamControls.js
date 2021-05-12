@@ -31,7 +31,7 @@ const IndividualTeamControls = props => {
         <Grid item xs={12} sm={9} md={6} container spacing={2} justify="flex-start">
             <Grid item xs={12} sm={4}>
                 <TextField
-                    id="outlined-basic"
+                    id={"team-"+teamUID+"-name"}
                     label="Name"
                     variant="outlined"
                     name="name"
@@ -42,7 +42,7 @@ const IndividualTeamControls = props => {
             </Grid>
             <Grid item xs={12} sm={4}>
                 <TextField
-                    id="outlined-basic"
+                    id={"team-"+teamUID+"-primary"}
                     label="Primary Color"
                     variant="outlined"
                     name="primary"
@@ -51,7 +51,7 @@ const IndividualTeamControls = props => {
                     type="text"
                 />
             </Grid>
-            {teamUID != "unassigned" &&
+            {teamUID !== "unassigned" &&
             <Grid item xs={12} sm={4}>
                 <FormControlLabel
                     control={

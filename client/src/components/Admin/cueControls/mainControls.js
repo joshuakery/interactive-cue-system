@@ -5,9 +5,10 @@ import { withFirebase } from '../../Firebase';
 import NextCueButton from './nextCue';
 import PrevCueButton from './prevCue';
 import CurrentCueDisplay from './currentCueDisplay';
+import ResetCuesButton from '../reset/resetCuesButton';
 
 import {
-    Button,
+    Button, Typography,
     TextField,
     InputAdornment,
     Grid, Box
@@ -31,11 +32,12 @@ class MainControls extends Component {
             next_cue: {},
             prev_cue: {},
             cues: [],
+            askToReset: false,
         };
     }
 
     getCurrentCueIndex = (cues, current_cue) => {
-        const found_cue = cues.find(cue => cue.number == current_cue.number);
+        const found_cue = cues.find(cue => cue.number === current_cue.number);
         if (!found_cue) return 0;
         const index = cues.indexOf(found_cue);
         return index;
@@ -65,7 +67,12 @@ class MainControls extends Component {
 
         this.props.firebase.cues().on('value', async (snapshot) => {
             const cues = snapshot.val();
-            if (!cues) return;
+            if (!cues) {
+                this.setState({
+                    askToReset: true,
+                });
+                return;
+            }
 
             /* cues are stored as an object, so we must sort into an ordered list */
             const sortedCues = [];
@@ -73,26 +80,36 @@ class MainControls extends Component {
                 sortedCues.push({...cues[uid], uid:uid});
             });
             sortedCues.sort(this.compareCues);
-
-            let current_cue = {};
-            await this.props.firebase.currentCue().once('value', snapshot => {
-                current_cue = snapshot.val(); 
+            this.setState({
+                cues: sortedCues,
             });
 
-            /* current_cue_index used with onNextCue, onPrevCue to switch to the index +/- 1 */
-            const current_cue_index = this.getCurrentCueIndex(sortedCues, current_cue);
-            /* next_cue used for display purposes, on the 'NEXT CUE' button */
-            const next_cue = this.getNextCue(sortedCues, current_cue_index);
-            /* prev_cue used for display purposes, on the 'PREV CUE' button */
-            const prev_cue = this.getPrevCue(sortedCues, current_cue_index);
+            this.props.firebase.currentCue().on('value', snapshot => {
+                const current_cue = snapshot.val(); 
+                if (!current_cue) {
+                    this.setState({
+                        askToReset: true,
+                    });
+                } else {
+                    const { cues } = this.state;
 
-            this.setState({
-              loading: false,
-              cues: sortedCues,
-              current_cue: current_cue,
-              current_cue_index: current_cue_index,
-              next_cue: next_cue,
-              prev_cue: prev_cue,
+                    /* current_cue_index used with onNextCue, onPrevCue to switch to the index +/- 1 */
+                    const current_cue_index = this.getCurrentCueIndex(cues, current_cue);
+                    /* next_cue used for display purposes, on the 'NEXT CUE' button */
+                    const next_cue = this.getNextCue(cues, current_cue_index);
+                    /* prev_cue used for display purposes, on the 'PREV CUE' button */
+                    const prev_cue = this.getPrevCue(cues, current_cue_index);
+
+                    this.setState({
+                        loading: false,
+                        current_cue: current_cue,
+                        current_cue_index: current_cue_index,
+                        next_cue: next_cue,
+                        prev_cue: prev_cue,
+                        askToReset: false,
+                    });
+
+                }
             });
 
         });
@@ -104,40 +121,14 @@ class MainControls extends Component {
         this.props.firebase.cues().off();
     }
 
-    /**
-     * Helper function to set the current_cue in firebase and the state
-     * for onNextCue, onPrevCue, and onGoToCue
-     *
-     */
-    setCue = ( new_cue_index ) => {
-        const { cues } = this.state;
-
-        const current_cue = cues[new_cue_index];
-        const next_index = Math.min( new_cue_index + 1, Object.keys(cues).length - 1 );
-        const next_cue = cues[next_index];
-        const prev_index = Math.max( new_cue_index - 1, 0 );
-        const prev_cue = cues[prev_index];
-
-        this.props.firebase.currentCue().set(current_cue);
-        this.setState({
-            goToCueValue: '',
-            current_cue: current_cue,
-            current_cue_index: new_cue_index,
-            next_cue: next_cue,
-            prev_cue: prev_cue,
-        });
-    }
-
     onNextCue = () => {
-        const { current_cue_index, cues } = this.state;
-        const next_index = Math.min( current_cue_index + 1, Object.keys(cues).length - 1 );
-        this.setCue(next_index);
+        const { next_cue } = this.state;
+        this.props.firebase.currentCue().set(next_cue);
     }
 
     onPrevCue = () => {
-        const { current_cue_index, cues } = this.state;
-        const prev_index = Math.max( current_cue_index - 1, 0 );
-        this.setCue(prev_index);
+        const { prev_cue } = this.state;
+        this.props.firebase.currentCue().set(prev_cue);
     }
 
     onGoToCueChange = event => {
@@ -151,23 +142,23 @@ class MainControls extends Component {
         event.preventDefault();
         const { goToCueValue, cues } = this.state;
         /* because we cannot have a non-existent cue be the current_cue */
-        if (goToCueValue == '') return;
+        if (goToCueValue === '') return;
 
         const goToCueNum = parseInt(goToCueValue);
         const found_cue = cues.find(cue => (
-            cue.number == goToCueNum ||
-            cue.note == goToCueValue
+            cue.number === goToCueNum ||
+            cue.note === goToCueValue
         ));
-        /* because we cannot have a non-existent cue be the current_cue */
-        if (!found_cue) {
-            this.setState({
-                goToCueValue: '',
-            });
-            return;
-        }
+        
+        this.setState({
+            goToCueValue: '',
+        });
 
-        const index = cues.indexOf(found_cue);
-        this.setCue(index);
+        /* because we cannot have a non-existent cue be the current_cue */
+        if (!found_cue) return;
+
+        this.props.firebase.currentCue().set(found_cue);
+
     }
 
     /**
@@ -177,13 +168,13 @@ class MainControls extends Component {
      *
      */
     isValidCue = goToCueValue => {
-        if (goToCueValue == '') return false;
+        if (goToCueValue === '') return false;
 
         const { cues } = this.state;
         const goToCueNum = parseInt(goToCueValue);
         const found_cue = cues.find(cue => (
-            cue.number == goToCueNum ||
-            cue.note == goToCueValue
+            cue.number === goToCueNum ||
+            cue.note === goToCueValue
         ));
         if (!found_cue) {
             return false;
@@ -193,9 +184,18 @@ class MainControls extends Component {
     }
 
     render() {
-        const { goToCueValue, cues, current_cue, next_cue, prev_cue } = this.state;
+        const { goToCueValue, cues, current_cue, next_cue, prev_cue, askToReset } = this.state;
         return(
             <Box mt={4} mb={4}>
+            {askToReset &&
+            <div>
+                <Typography variant="h5">
+                    Cues not configued. Reset cues to resolve.
+                </Typography>
+                <ResetCuesButton />
+            </div>
+            }
+            {(cues.length > 0 && current_cue && Object.keys(current_cue).length > 0) &&
             <form onSubmit={(e) => this.onGoToCue(e)}>
             <Grid container spacing={1} justify="space-between">
 
@@ -212,7 +212,7 @@ class MainControls extends Component {
                         
                             <Grid item xs={12} sm={8}>
                                 <TextField
-                                    id="outlined-basic"
+                                    id="go-to-cue-text"
                                     label="Go To Cue"
                                     variant="outlined"
                                     InputProps={{
@@ -246,6 +246,7 @@ class MainControls extends Component {
 
             </Grid>
             </form>
+            }
             </Box>
         )
     }
