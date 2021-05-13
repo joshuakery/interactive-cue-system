@@ -111,7 +111,7 @@ For simplicity, the audience-facing Home page can be customized using nearly van
         - In a text-editor, open this file and replace `false` with `true`.
         - Back in the Console, from the same right-hand side 3-dots menu, Import JSON and re-import this file. This should replace the ADMIN value in the database.
 1. In the local build of the app running from the command line, Sign Out and Sign In again.
-    - **BUG** *No admin menu. To resolve, you may need to sign in, and navigate to the sign-in page again and sign in twice.*
+    - **BUG** *No admin menu. To resolve, you may need to sign in, and navigate to the sign-in page again and sign in a second time.*
     - When you sign in again, the app will check your ADMIN status in the Realtime Database and send a message to the server index.js to use the Firebase Admin SDK to update your custom claims accordingly.
     - You should now be authorized by the Admin SDK and you should see a menu with 'ADMIN' and 'HOME' options.
 
@@ -145,7 +145,9 @@ Heroku also has this process well documented [here](https://devcenter.heroku.com
 ### Additional Resources
 
 [Heroku: Web Sockets & Heroku](https://devcenter.heroku.com/articles/node-websockets)
+
 [Dave Ceddia: React, Express & Heroku](https://daveceddia.com/deploy-react-express-app-heroku/)
+
 [Evgeny: React, socket.io & Heroku](https://eugrdn.me/blog/react-socketio-heroku/)
 
 ## How It Works
