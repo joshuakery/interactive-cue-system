@@ -14,6 +14,9 @@ import p5 from 'p5';
  * in which we create a Sketch object to keep our variables local
  * and we use it with React's createRef so that our canvas isn't constantly
  * updating with every user action (the default React behavior)
+ * 
+ * @param String inputID - is both the name of the socket.io room to join
+ * and the firebase db node where to store data for this canvas
  *
  */
 class P5Canvas extends Component {
@@ -86,8 +89,8 @@ class P5Canvas extends Component {
       socket.on('moving', (action) => {
         const {id,name,data} = action;
         if (name === 'line') {
-          /* draw if (data.drawing) this is not the first point in the line */
-          /* draw if (clients[id]) we have saved a preceding point in the line for this user */
+          /* draw if (data.drawing) i.e. this is not the first point in the line */
+          /* and if (clients[id]) i.e. we have saved a preceding point in the line for this user */
           if (data.drawing && clients[id]) {
             var x0 = clients[id].x;
             var y0 = clients[id].y;
