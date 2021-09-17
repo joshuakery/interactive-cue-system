@@ -179,7 +179,7 @@ class P5Canvas extends Component {
      * and crucially, that this is a 'line' action
      * 
      */
-    p.mouseDragged = () => {
+    const dragged = () => {
       if (drawing) {
         var l = [
           prev.x, prev.y,
@@ -211,6 +211,15 @@ class P5Canvas extends Component {
         });
         lastEmit = now;
       }
+    }
+
+    p.touchMoved = () => {
+      dragged();
+      return false; //prevent scrolling on mobile
+    }
+
+    p.mouseDragged = () => {
+      dragged();
     }
 
     /**

@@ -48,7 +48,7 @@ import "./style.css";
    const inputID = 'cue3';
    return (
      <div>
-       <h1>This is the third and fourth cue.</h1>
+       <h1>This is the third and fourth cue!</h1>
        <p>This drawing canvas is shared with all users!</p>
        {/* we pass a key value here so that P5Canvas always reloads on a cue change */}
        <P5Canvas key={inputID} userUID={uid} inputID={inputID}></P5Canvas>
