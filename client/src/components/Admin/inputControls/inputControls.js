@@ -10,17 +10,12 @@ import InputTable from './inputTable';
 import ClearInputButton from '../reset/clearInputButton';
 
 class InputControls extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
-        const { showUID } = this.props;
         return(
             <div>
                 <Box mt={4} mb={4}>
-                    <InputTable showUID={showUID} />
-                    <ClearInputButton showUID={showUID} />
+                    <InputTable />
+                    <ClearInputButton />
                 </Box>
             </div>
         );

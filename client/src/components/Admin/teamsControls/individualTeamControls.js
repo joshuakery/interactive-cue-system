@@ -27,8 +27,8 @@ const IndividualTeamControls = props => {
         submitTeamChanges,
     } = props;
     return (
-    <Grid item xs={12} container spacing={2} justifyContent="space-between">
-        <Grid item xs={12} sm={9} md={6} container spacing={2} justifyContent="flex-start">
+    <Grid item xs={12} container spacing={2} justify="space-between">
+        <Grid item xs={12} sm={9} md={6} container spacing={2} justify="flex-start">
             <Grid item xs={12} sm={4}>
                 <TextField
                     id={"team-"+teamUID+"-name"}
@@ -68,7 +68,7 @@ const IndividualTeamControls = props => {
             </Grid>
             }
         </Grid>
-        <Grid item xs={12} sm={3} container justifyContent="flex-end">
+        <Grid item xs={12} sm={3} container justify="flex-end">
             <SubmitTeamChangesButton
                 onClick={() => submitTeamChanges(teamUID)}
                 disabled={_.isEqual(team,originalTeams[teamUID])}

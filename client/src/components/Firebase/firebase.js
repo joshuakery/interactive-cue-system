@@ -1,7 +1,6 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-// import { getDatabase, connectDatabaseEmulator } from "firebase/database";
 import axios from 'axios';
 
 const config = {
@@ -21,23 +20,6 @@ class Firebase {
 
         this.auth = app.auth();
         this.db = app.database();
-        console.log(window.location.hostname);
-        if (window.location.hostname === "localhost") {
-          // Point to the RTDB emulator running on localhost.
-          this.db.useEmulator("localhost", 9000);
-          // Point to the auth emulator running on localhost.
-          this.auth.useEmulator("http://localhost:9099");
-        }
-        if (window.location.hostname === "192.168.0.15") {
-          // Point to the RTDB emulator running on localhost.
-          this.db.useEmulator("192.168.0.15", 9000);
-          // Point to the auth emulator running on localhost.
-          this.auth.useEmulator("http://192.168.0.15:9099");
-        }
-        
-        this.state = {
-          showUID: '',
-        }
     }
 
     //just create some listeners for firebase changes to the current show
@@ -186,119 +168,28 @@ class Firebase {
     
     users = () => this.db.ref('users');
 
-    // *** Current Show ID API ***
-
-    viewedShowID = () => this.db.ref(`users/${this.auth.currentUser.uid}/show`);
-
-    // *** Show API ***
-
-    shows = () => this.db.ref('shows');
-
-    show = uid => this.db.ref(`shows/${uid}`);
-
     // *** Current Cue API ***
 
-    currentCue = showUID => this.db.ref(`shows/${showUID}/current_cue`);
+    currentCue = () => this.db.ref('current_cue');
 
     // *** Cues API ***
 
-    cue = (showUID, cueUID) => this.db.ref(`shows/${showUID}/cues/${cueUID}`);
+    cue = uid => this.db.ref(`cues/${uid}`);
 
-    cues = (showUID) => this.db.ref(`shows/${showUID}/cues`);
+    cues = () => this.db.ref('cues');
 
     // *** User Input API ***
 
-    bracketVote = (showUID,inputID,round,pair,userUID) =>
-      this.db.ref(`shows/${showUID}/userInput/${inputID}/bracket/rounds/${round}/${pair}/votes/${userUID}`);
+    userInput = id => this.db.ref(`userInput/${id}`);
 
-    bracketVotes = (showUID,inputID,round,pair) =>
-      this.db.ref(`shows/${showUID}/userInput/${inputID}/bracket/rounds/${round}/${pair}/votes`);
-
-    bracket = (showUID,inputID) => this.db.ref(`shows/${showUID}/userInput/${inputID}/bracket`);
-
-    currentBattle = (showUID,inputID) =>
-      this.db.ref(`shows/${showUID}/userInput/${inputID}/bracket/currentBattle`);
-
-    individualUserInput = (showUID, inputID, teamUID, userUID) =>
-      this.db.ref(`shows/${showUID}/userInput/${inputID}/${teamUID}/${userUID}`);
-
-    teamInput = (showUID, inputID, teamUID) =>
-      this.db.ref(`shows/${showUID}/userInput/${inputID}/${teamUID}`)
-
-    showWideInput = (showUID, inputID) =>
-      this.db.ref(`shows/${showUID}/userInput/${inputID}`);
-
-    allUserInput = (showUID) => this.db.ref(`shows/${showUID}/userInput`);
-
-    // userInput = ids => {
-    //   if (ids.userUID)      return this.db.ref(`shows/${ids.showUID}/userInput/${ids.inputID}/${ids.teamUID}/${ids.userUID}`);
-    //   else if (ids.teamUID) return this.db.ref(`shows/${ids.showUID}/userInput/${ids.inputID}/${ids.teamUID}`);
-    //   else if (ids.inputID) return this.db.ref(`shows/${ids.showUID}/userInput/${ids.inputID}`);
-    //   else                  return this.db.ref(`shows/${ids.showUID}/userInput`);
-    // }
+    allUserInput = () => this.db.ref('userInput');
 
     // *** Teams API ***
 
-    team = (showUID, teamUID) => this.db.ref(`shows/${showUID}/teams/${teamUID}`);
+    team = uid => this.db.ref(`teams/${uid}`);
 
-    teams = (showUID) => this.db.ref(`shows/${showUID}/teams`);
-
-    teamPoints = (showUID, teamUID) => this.db.ref(`shows/${showUID}/teams/${teamUID}/points`);
-
-    // // *** Current Cue API ***
-
-    // currentCue = () => this.db.ref(`shows/${this.state.showUID}/current_cue`);
-    
-    // // *** Cues API ***
-
-    // cue = uid => this.db.ref(`shows/${this.state.showUID}/cues/${uid}`);
-
-    // cues = showUID => this.db.ref(`shows/${this.state.showUID}/cues`);
-
-    // // *** User Input API ***
-
-    // userInput = id => this.db.ref(`userInput/${id}`);
-
-    // allUserInput = () => this.db.ref('userInput');
-
-    // // *** Teams API ***
-
-    // team = uid => this.db.ref(`teams/${uid}`);
-
-    // teams = () => this.db.ref('teams');
+    teams = () => this.db.ref('teams');
 
 }
    
 export default Firebase;
-
-    // // *** Current Show ID API ***
-
-    // currentShowID = () => this.db.ref('current_show_id');
-
-    // // *** Show API ***
-
-    // shows = () => this.db.ref('shows');
-
-    // show = uid => this.db.ref(`shows/${uid}`);
-
-    // // *** Current Cue API ***
-
-    // currentCue = showUID => this.db.ref(`shows/${showUID}/current_cue`);
-
-    // // *** Cues API ***
-
-    // cue = (showUID, cueUID) => this.db.ref(`shows/${showUID}/cues/${cueUID}`);
-
-    // cues = (showUID) => this.db.ref(`shows/${showUID}/cues`);
-
-    // // *** User Input API ***
-
-    // userInput = (showUID, inputID) => this.db.ref(`shows/${showUID}/userInput/${inputID}`);
-
-    // allUserInput = (showUID) => this.db.ref(`shows/${showUID}/userInput`);
-
-    // // *** Teams API ***
-
-    // team = (showUID, teamUID) => this.db.ref(`shows/${showUID}/teams/${teamUID}`);
-
-    // teams = (showUID) => this.db.ref(`shows/${showUID}/teams`);

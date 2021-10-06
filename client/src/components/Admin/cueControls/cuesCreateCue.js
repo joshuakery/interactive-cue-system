@@ -24,7 +24,7 @@ class CreateCueForm extends Component {
     onCreateCue = (event) => {
         event.preventDefault();
         if (this.state.createCue.number === '') return;
-        this.props.firebase.cues(this.props.showUID)
+        this.props.firebase.cues()
         .push(this.state.createCue);
         this.setState({
             createCue: {

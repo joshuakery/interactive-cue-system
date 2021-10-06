@@ -11,16 +11,16 @@ import {
 
 class CueControls extends Component {
     render() {
-        const { showUID } = this.props;
         return (
             <Box mt={4} mb={4}>
-                <MainControls showUID={showUID} />
-                <CuesTable showUID={showUID} />
-                <CreateCueForm showUID={showUID} />
-                <ResetCuesButton showUID={showUID} />
+                <MainControls />
+                <CuesTable />
+                <CreateCueForm />
+                <ResetCuesButton />
             </Box>
         );
     }
 }
+
 
 export default CueControls;

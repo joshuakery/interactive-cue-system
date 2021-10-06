@@ -13,19 +13,11 @@ const useStyles = makeStyles({
 });
 
 const NextCueButton = (props) => {
-  const { nextCue, onNextCue, disabled } = props;
+  const { nextCue, onNextCue } = props;
   const classes = useStyles();
   return(
-    <Button
-      variant="contained"
-      color="secondary"
-      onClick={onNextCue}
-      fullWidth={true}
-      size="large"
-      className={classes.nextButton}
-      disabled={disabled}
-    >
-      {`NEXT CUE ${nextCue ? nextCue.number : ''}`}
+    <Button variant="contained" color="secondary" onClick={onNextCue} fullWidth={true} size="large" className={classes.nextButton}>
+        NEXT CUE: {nextCue && nextCue.number}
     </Button>
   );
 };

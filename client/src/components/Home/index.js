@@ -14,7 +14,6 @@ class HomePage extends Component {
 
     this.state = {
       loading: true,
-      showUID: '',
       current_cue: {},
       user: {},
       team: {},
@@ -22,58 +21,48 @@ class HomePage extends Component {
  
   }
 
-  setupListeners = () => {
-    this.props.firebase.viewedShowID().on('value', async (snapshot) => {
-      const showUID = snapshot.val();
-
-      /* This is very important. This is the listener for a cue change triggered by the admin page. */
-      await this.props.firebase.currentCue(showUID).on('value', snapshot => {
-        const current_cue = snapshot.val();
-        this.setState({
-          loading: false,
-          current_cue: current_cue,
-        });
-
-      });
-
-      /* Respond to changes in the user's metadata or team */
-      const { uid } = this.props.authUser;
-      this.props.firebase.user(uid).on('value', snapshot => {
-        const user = snapshot.val();
-        if (!user.team) user.team = "unassigned";
-        this.setState({
-          user: user,
-        });
-        // remove listener for changes to the old team
-        // to prevent memory leaking i.e. responding to changes to the old team
-        const oldTeam = this.state.user.team;
-        this.props.firebase.team(showUID, oldTeam).off();
-        // create a new listener for changes to the new team
-        this.props.firebase.team(showUID, user.team).on('value', snapshot => {
-          const team = snapshot.val();
-          this.setState({
-            team: team,
-          });
-        })
-
-      });
-
-      this.setState({ showUID:showUID });
-    });
-  }
-
   componentDidMount() {
     this.setState({ loading: true });
-    this.setupListeners();
+ 
+    /* This is very important. This is the listener for a cue change triggered by the admin page. */
+    this.props.firebase.currentCue().on('value', snapshot => {
+      const current_cue = snapshot.val();
+
+      this.setState({
+        loading: false,
+        current_cue: current_cue,
+      });
+
+    });
+
+    /* Respond to changes in the user's metadata or team */
+    const { uid } = this.props.authUser;
+    this.props.firebase.user(uid).on('value', snapshot => {
+      const user = snapshot.val();
+      if (!user.team) user.team = "unassigned";
+      this.setState({
+        user: user,
+      });
+      // remove listener for changes to the old team
+      // to prevent memory leaking i.e. responding to changes to the old team
+      const oldTeam = this.state.user.team;
+      this.props.firebase.team(oldTeam).off();
+      // create a new listener for changes to the new team
+      this.props.firebase.team(user.team).on('value', snapshot => {
+        const team = snapshot.val();
+        this.setState({
+          team: team,
+        });
+      })
+
+    });
 
   }
 
   componentWillUnmount() {
     const { uid } = this.props.authUser;
-    const { showUID } = this.state;
-    this.props.firebase.currentCue(showUID).off();
+    this.props.firebase.currentCue().off();
     this.props.firebase.user(uid).off();
-    this.props.firebase.viewedShowID().off();
   }
 
   calculateContrastingFontColor = (color) => {
@@ -81,15 +70,15 @@ class HomePage extends Component {
   }
 
   getCurrentCueHTML = () => {
-    const userUID = this.props.authUser.uid;
-    const { current_cue, user, team, showUID } = this.state;
+    const { uid } = this.props.authUser;
+    const { current_cue, user, team } = this.state;
     if (!current_cue) {
       console.log("Current cue configured. State:")
       console.log(this.state);
       return;
     }
     if (cueHTML[current_cue.number]) {
-      return cueHTML[current_cue.number](showUID,userUID,user,team);
+      return cueHTML[current_cue.number](uid,user,team);
     }
   }
 

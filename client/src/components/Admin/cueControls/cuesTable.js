@@ -41,29 +41,8 @@ class CuesTable extends Component {
 
     componentDidMount() {
         this.setState({ loading: false });
-        this.setupState();
-    }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.showUID !== prevProps.showUID) {
-
-            //turn off old listeners
-            this.props.firebase.cues(prevProps.showUID).off();
-            this.props.firebase.currentCue(prevProps.showUID).off();
-
-            //turn on new listeners
-            this.setupState();
-            
-        }
-    }
-
-    componentWillUnmount() {
-        this.props.firebase.cues(this.props.showUID).off();
-        this.props.firebase.currentCue(this.props.showUID).off();
-    }
-
-    setupState = () => {
-        this.props.firebase.cues(this.props.showUID).on('value', async (snapshot) => {
+        this.props.firebase.cues().on('value', async (snapshot) => {
             const cues = snapshot.val();
             if (!cues) return;
 
@@ -72,20 +51,25 @@ class CuesTable extends Component {
                 sortedCues.push({...cues[uid], uid:uid});
             });
             sortedCues.sort(this.compareCues);
-    
+
             this.setState({
               loading: false,
               cues: sortedCues,
             });
+
         });
 
-        this.props.firebase.currentCue(this.props.showUID).on('value', async (snapshot) => {
+        this.props.firebase.currentCue().on('value', async (snapshot) => {
             const current_cue = snapshot.val();
             this.setState({
                 current_cue: current_cue,
             });
         });
+    }
 
+    componentWillUnmount() {
+        this.props.firebase.cues().off();
+        this.props.firebase.currentCue().off();
     }
 
     /**
@@ -102,9 +86,9 @@ class CuesTable extends Component {
 
         const { uid } = cue;
         if (this.state.changedCues[uid].remove) {
-            this.props.firebase.cue(this.props.showUID, uid).remove();
+            this.props.firebase.cue(uid).remove();
         } else {
-            this.props.firebase.cue(this.props.showUID, uid).update(this.state.changedCues[uid]);
+            this.props.firebase.cue(uid).update(this.state.changedCues[uid]);
         }
         
         const changedCues = this.state.changedCues;

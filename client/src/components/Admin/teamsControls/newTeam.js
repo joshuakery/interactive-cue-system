@@ -31,7 +31,7 @@ class NewTeamFormBase extends Component {
               primary: primary,
           },
       };
-      this.props.firebase.teams(this.props.showUID).push(team);
+      this.props.firebase.teams().push(team);
       this.setState({
         name: '',
         primary: '',
@@ -68,7 +68,7 @@ class NewTeamFormBase extends Component {
                   type="text"
                 />
               </Grid>
-              <Grid item xs={12} container justifyContent="center">
+              <Grid item xs={12} container justify="center">
                 <TextField
                   id="create-team-primary"
                   label="Primary Color"
@@ -80,7 +80,7 @@ class NewTeamFormBase extends Component {
                   type="text"
                 />
               </Grid>
-              <Grid item xs={12} container justifyContent="center">
+              <Grid item xs={12} container justify="center">
                 <Button
                   variant="contained"
                   color="primary"
@@ -92,7 +92,7 @@ class NewTeamFormBase extends Component {
                   CREATE TEAM
                 </Button>
               </Grid>
-              <Grid item xs={12} container justifyContent="center">
+              <Grid item xs={12} container justify="center">
                 {error &&
                 <Typography variante="body1">
                   {error.message}
