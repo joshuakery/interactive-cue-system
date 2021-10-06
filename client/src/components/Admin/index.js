@@ -5,8 +5,9 @@ import { withFirebase } from '../Firebase';
 import { withAuthorization } from '../Session';
 import * as ROLES from '../../constants/roles';
 
+import ShowsControls from './showsControls/showsControls';
 import CueControls from './cueControls/cueControls';
-import UsersControls from './usersControls';
+import UsersControls from './usersControls/usersControls';
 import TeamsControls from './teamsControls/teamsControls';
 import InputControls from './inputControls/inputControls';
 
@@ -17,18 +18,39 @@ import {
 
  
 class AdminPage extends Component {
-  render() {
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      showUID: '',
+    }
+  }
+
+  componentDidMount() {
+    this.props.firebase.viewedShowID().on('value', async (snapshot) => {
+      const showUID = snapshot.val();
+      this.setState({ showUID:showUID });
+    });
+  }
+
+  componentWillUnmount() {
+      this.props.firebase.viewedShowID().off();
+  }
+
+  render() {
+    const { showUID } = this.state;
     return (
       <div>
         <Box m={2} maxWidth="1000px" margin="auto">
-          <CueControls />
+          <ShowsControls authUser={this.props.authUser} />
           <Divider />
-          <UsersControls authUser={this.props.authUser} />
+          <CueControls showUID={showUID} />
           <Divider />
-          <TeamsControls authUser={this.props.authUser} />
+          <UsersControls authUser={this.props.authUser} showUID={showUID} />
           <Divider />
-          <InputControls />
+          <TeamsControls authUser={this.props.authUser} showUID={showUID} />
+          <Divider />
+          <InputControls showUID={showUID} />
         </Box>
       </div>
     );

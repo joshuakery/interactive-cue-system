@@ -28,7 +28,8 @@ class P5Canvas extends Component {
   }
 
   Sketch = (p) => {
-    const { userUID, inputID } = this.props;
+    const { ids, firebaseRef } = this.props;
+    const { userUID } = ids;
     const socket = this.props.socket.socket;
 
     var drawing;
@@ -67,7 +68,7 @@ class P5Canvas extends Component {
     }
 
     p.setup = () => {
-      console.log('setting up canvas');
+      // console.log('setting up canvas');
       p.createCanvas(400, 400);
       p.background(255);
 
@@ -116,18 +117,18 @@ class P5Canvas extends Component {
        * in real time, instead of a firebase 'on' listener.
        *
        */
-      this.props.firebase.userInput(inputID).once('value', snapshot => {
-        const userInput = snapshot.val();
-        if (!userInput) return;
-        Object.keys(userInput).forEach(key => {
-          const action = userInput[key];
-          p.drawAction(action);
-        })
-      });
+       firebaseRef.once('value', snapshot => {
+          const userInput = snapshot.val();
+          if (!userInput) return;
+          Object.keys(userInput).forEach(key => {
+            const action = userInput[key];
+            p.drawAction(action);
+          });
+        });
 
-      p.stroke('gray');
-      p.noFill();
-      p.rect(0,0,p.width,p.height);
+        p.stroke('gray');
+        p.noFill();
+        p.rect(0,0,p.width,p.height);
 
     }
 
@@ -196,7 +197,7 @@ class P5Canvas extends Component {
       /* note the hard-coded 30 milliseconds */
       if (now - lastEmit > 30) {
         socket.emit('mousemove',{
-          room: inputID,
+          room: JSON.stringify(ids),
           'id':userUID,
           'name':'line',
           'data':{
@@ -236,8 +237,8 @@ class P5Canvas extends Component {
           data: data,
         };
         myLines = [];
-        const newActionRef = this.props.firebase.userInput(inputID).push();
-        newActionRef.set(action);
+
+        firebaseRef.push().set(action);
 
     }
 
@@ -252,8 +253,8 @@ class P5Canvas extends Component {
       /* note the hard-coded 30 milliseconds */
       if (now - lastEmit > 30) {
         socket.emit('mousemove', {
-          room: inputID,
-          'id':userUID,
+          room: JSON.stringify(ids),
+          'id': userUID,
           'name':'move',
           'data':{
             x: p.mouseX,
@@ -272,27 +273,48 @@ class P5Canvas extends Component {
 
   componentDidMount() {
     const socket = this.props.socket.socket;
-    const { inputID } = this.props;
 
     socket.emit('joinroom', {
-      room: inputID,
+      room: JSON.stringify(this.props.ids),
     });
 
     this.myP5 = new p5(this.Sketch, this.myRef.current);
 
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.ids !== this.props.ids) {
+      const socket = this.props.socket.socket;
+
+      /* remove all of our event listeners, so we don't have any data leaks */
+      socket.removeAllListeners();
+      this.myP5.remove();
+      prevProps.firebaseRef.off();
+
+      socket.emit('leaveroom', {
+        room: JSON.stringify(prevProps.ids),
+      });
+
+      socket.emit('joinroom', {
+        room: JSON.stringify(this.props.ids),
+      });
+
+      this.myP5 = new p5(this.Sketch, this.myRef.current);
+
+    }
+  }
+
   componentWillUnmount() {
     const socket = this.props.socket.socket;
-    const { inputID } = this.props;
+    const { firebaseRef } = this.props;
 
     /* remove all of our event listeners, so we don't have any data leaks */
     socket.removeAllListeners();
     this.myP5.remove();
-    this.props.firebase.userInput(inputID).off();
+    firebaseRef.off();
 
     socket.emit('leaveroom', {
-      room: inputID,
+      room: JSON.stringify(this.props.ids),
     });
   }
 

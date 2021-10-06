@@ -5,10 +5,16 @@ import {
 } from '@material-ui/core';
 
 const PrevCueButton = (props) => {
-  const { prevCue, onPrevCue } = props;
+  const { prevCue, onPrevCue, disabled } = props;
   return(
-    <Button variant="contained" color="primary" onClick={onPrevCue} fullWidth={true}>
-        PREV CUE: {prevCue && prevCue.number}
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={onPrevCue}
+      fullWidth={true}
+      disabled={disabled}
+    >
+        {`PREV CUE ${prevCue ? prevCue.number : ''}`}
     </Button>
   );
 };

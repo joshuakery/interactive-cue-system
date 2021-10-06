@@ -81,6 +81,14 @@ const NavigationAuth = (props) => {
             to={ROUTES.HOME}
           />
         )}
+        {(!!authUser.roles[ROLES.ADMIN] && !!authUser.claims.admin) && ( 
+          <Tab
+            label="PARTY"
+            value={ROUTES.PARTY}
+            component={ Link }
+            to={ROUTES.PARTY}
+          />
+        )}
         
       </Tabs>
       <SignOutButton />
@@ -114,7 +122,7 @@ const NavigationNonAuth = () => (
     <Button
       size="small"
       component={Link}
-      to={ROUTES.SIGN_IN}
+      to={ROUTES.SIGN_IN_SIGN_UP}
     >
       SIGN IN
     </Button>

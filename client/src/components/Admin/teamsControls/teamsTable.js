@@ -25,12 +25,11 @@ class TeamsTable extends Component {
           /* originalTeams keeps track of changes to teams, to disable/enable buttons when there is a change */
           originalTeams: {},
           askToReset: false,
+          teamsListener: null,
         };
     }
 
-    componentDidMount() {
-        this.setState({ loading: true });
-
+    setTeamsListener = showUID => {
         /**
          * sets up teams object containing team objects each with users lists
          * 
@@ -39,9 +38,8 @@ class TeamsTable extends Component {
          * instead of needing a default 'unassigned' value
          *
          */
-        this.props.firebase.teams().on('value', async (snapshot) => {
+         const teamsListener = this.props.firebase.teams(showUID).on('value', async (snapshot) => {
             const teams = snapshot.val();
-
             if (!teams || !teams.unassigned) {
                 this.setState({
                     askToReset: true,
@@ -58,13 +56,15 @@ class TeamsTable extends Component {
             /* sort users into teams object */
             await this.props.firebase.users().once('value', snapshot => {
                 const users = snapshot.val();
-
                 Object.keys(users).forEach(userUID => {
                     const user = users[userUID];
-                    if (!user.team) {
-                        teams.unassigned.users[userUID] = user;
-                    } else {
-                        teams[user.team].users[userUID] = user;
+                    
+                    if (user.show === this.props.showUID) {
+                        if (!user.team || !teams[user.team]) {
+                            teams.unassigned.users[userUID] = user;
+                        } else {
+                            teams[user.team].users[userUID] = user;
+                        }
                     }
                 });
     
@@ -77,10 +77,22 @@ class TeamsTable extends Component {
                 askToReset: false,
             });
         });
+        this.setState({ teamsListener:teamsListener });
+    }
+
+    componentDidMount() {
+        this.setState({ loading: true });
+        this.setTeamsListener(this.props.showUID);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.showUID !== this.props.showUID) {
+            this.setTeamsListener(this.props.showUID);
+        }
     }
     
     componentWillUnmount() {
-        this.props.firebase.teams().off();
+        this.props.firebase.teams(this.props.showUID).off('value', this.state.teamsListener);
     }
      
     handleTeamChange = (event, user) => {
@@ -173,7 +185,7 @@ class TeamsTable extends Component {
             this.props.firebase.user(userUID).update(user);
         });
         delete teams[teamUID];
-        this.props.firebase.team(teamUID).set(null);
+        this.props.firebase.team(this.props.showUID, teamUID).set(null);
         //since we might have unsaved changes to other teams elsewhere, only update this team in originalTeams
         delete originalTeams[teamUID];
         this.setState({
@@ -201,7 +213,7 @@ class TeamsTable extends Component {
                 name: team.name,
                 colors: team.colors,
             }
-            this.props.firebase.team(teamUID).update(teamData);
+            this.props.firebase.team(this.props.showUID, teamUID).update(teamData);
             //set original teams so we can disable buttons
             const { originalTeams } = this.state;
             originalTeams[teamUID] = _.cloneDeep(team);
@@ -267,7 +279,7 @@ class TeamsTable extends Component {
                 <Typography variant="h5">
                     Teams missing default team. Reset teams to resolve.
                 </Typography>
-                <ResetTeamsButton />
+                <ResetTeamsButton showUID={this.props.showUID} />
             </div>
             }
             {teams.unassigned &&
@@ -281,7 +293,7 @@ class TeamsTable extends Component {
                             Teams
                         </Typography>
                     </Grid>
-                    <Grid item xs={6} container justify="flex-end">
+                    <Grid item xs={6} container justifyContent="flex-end">
                         <Button
                             variant="contained"
                             color="secondary"
