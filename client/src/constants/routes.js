@@ -1,7 +1,9 @@
 export const LANDING = '/';
 export const SIGN_UP = '/signup';
 export const SIGN_IN = '/signin';
+export const SIGN_IN_SIGN_UP = '/signinsignup';
 export const HOME = '/home';
+export const PARTY = '/party';
 export const ACCOUNT = '/account';
 export const ADMIN = '/admin';
 export const PASSWORD_FORGET = '/pw-forget';

@@ -1,5 +1,6 @@
 {
-    "rules": {
+  "rules": {
+    "shows":{
       "cues": {
         ".read": "auth.token.admin === true",
         ".write": "auth.token.admin === true"
@@ -8,14 +9,6 @@
         ".read": "auth != null",
         ".write": "auth.token.admin === true"  
       },
-      "users": {
-        "$uid":{
-          ".read": "$uid === auth.uid || auth.token.admin === true",
-          ".write": "$uid === auth.uid || auth.token.admin === true"
-        },
-        ".read": "auth.token.admin === true",
-        ".write": "auth.token.admin === true"
-      },
       "userInput": {
         ".read": "auth != null",
         ".write": "auth != null"
@@ -23,6 +16,17 @@
       "teams": {
         ".read": "auth != null",
         ".write": "auth.token.admin === true", 
-      }
+      },
+      ".read": "true",
+      ".write": "true",
+    },
+    "users": {
+      "$uid":{
+        ".read": "$uid === auth.uid || auth.token.admin === true",
+        ".write": "$uid === auth.uid || auth.token.admin === true"
+      },
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true"
     }
   }
+}

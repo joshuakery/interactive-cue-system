@@ -3,16 +3,11 @@ import { compose } from 'recompose';
 import { withFirebase } from '../../Firebase';
 
 import ConfirmButton from './confirmButton';
+import { resetCues } from './utils';
 
 class ResetCuesButton extends Component {
-    resetCues = () => {
-        this.props.firebase.cues().set(null);
-        const first_cue = {
-            number: 0,
-            note: 'First Cue',
-        };
-        this.props.firebase.cues().push(first_cue);
-        this.props.firebase.currentCue().set(first_cue);
+    constructor(props) {
+        super(props);
     }
 
     render() {
@@ -21,7 +16,7 @@ class ResetCuesButton extends Component {
                 buttonText="RESET CUES"
                 confirmation="Delete all cues? (This will create one default cue: First Cue, 0 )"
                 success="Cues reset!"
-                action={this.resetCues}
+                action={(e) => resetCues(this.props.firebase, this.props.showUID)}
             />
         );
     }

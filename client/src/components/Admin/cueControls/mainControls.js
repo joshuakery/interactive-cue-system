@@ -64,8 +64,29 @@ class MainControls extends Component {
 
     componentDidMount() {
         this.setState({ loading: true });
+        this.setupCuesState();
+    }
 
-        this.props.firebase.cues().on('value', async (snapshot) => {
+    componentDidUpdate(prevProps) {
+        if (this.props.showUID !== prevProps.showUID) {
+
+            //turn off old listeners
+            this.props.firebase.cues(prevProps.showUID).off();
+            this.props.firebase.currentCue(prevProps.showUID).off();
+
+            //turn on new listeners
+            this.setupCuesState();
+
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.firebase.currentCue(this.props.showUID).off();
+        this.props.firebase.cues(this.props.showUID).off();
+    }
+
+    setupCuesState = () => {
+        this.props.firebase.cues(this.props.showUID).on('value', async (snapshot) => {
             const cues = snapshot.val();
             if (!cues) {
                 this.setState({
@@ -80,11 +101,11 @@ class MainControls extends Component {
                 sortedCues.push({...cues[uid], uid:uid});
             });
             sortedCues.sort(this.compareCues);
-            this.setState({
+            await this.setState({
                 cues: sortedCues,
             });
 
-            this.props.firebase.currentCue().on('value', snapshot => {
+            this.props.firebase.currentCue(this.props.showUID).on('value', snapshot => {
                 const current_cue = snapshot.val(); 
                 if (!current_cue) {
                     this.setState({
@@ -92,7 +113,6 @@ class MainControls extends Component {
                     });
                 } else {
                     const { cues } = this.state;
-
                     /* current_cue_index used with onNextCue, onPrevCue to switch to the index +/- 1 */
                     const current_cue_index = this.getCurrentCueIndex(cues, current_cue);
                     /* next_cue used for display purposes, on the 'NEXT CUE' button */
@@ -113,22 +133,16 @@ class MainControls extends Component {
             });
 
         });
-
-    }
-
-    componentWillUnmount() {
-        this.props.firebase.currentCue().off();
-        this.props.firebase.cues().off();
     }
 
     onNextCue = () => {
         const { next_cue } = this.state;
-        this.props.firebase.currentCue().set(next_cue);
+        this.props.firebase.currentCue(this.props.showUID).set(next_cue);
     }
 
     onPrevCue = () => {
         const { prev_cue } = this.state;
-        this.props.firebase.currentCue().set(prev_cue);
+        this.props.firebase.currentCue(this.props.showUID).set(prev_cue);
     }
 
     onGoToCueChange = event => {
@@ -157,7 +171,7 @@ class MainControls extends Component {
         /* because we cannot have a non-existent cue be the current_cue */
         if (!found_cue) return;
 
-        this.props.firebase.currentCue().set(found_cue);
+        this.props.firebase.currentCue(this.props.showUID).set(found_cue);
 
     }
 
@@ -192,20 +206,36 @@ class MainControls extends Component {
                 <Typography variant="h5">
                     Cues not configued. Reset cues to resolve.
                 </Typography>
-                <ResetCuesButton />
+                <ResetCuesButton showUID={this.props.showUID} />
             </div>
             }
             {(cues.length > 0 && current_cue && Object.keys(current_cue).length > 0) &&
             <form onSubmit={(e) => this.onGoToCue(e)}>
-            <Grid container spacing={1} justify="space-between">
+            <Grid container spacing={1} justifyContent="space-between">
 
                 <Grid item xs={12} sm={4} container spacing={3}>
                     <Grid item xs={12} container spacing={1}>
                         <Grid item xs={12}>
-                            <NextCueButton nextCue={next_cue} onNextCue={this.onNextCue} />
+                            <NextCueButton
+                                nextCue={
+                                    current_cue.number === cues[cues.length-1].number ?
+                                    null :
+                                    next_cue
+                                }
+                                onNextCue={this.onNextCue}
+                                disabled={current_cue.number === cues[cues.length-1].number}
+                            />
                         </Grid>
                         <Grid item xs={12}>
-                            <PrevCueButton prevCue={prev_cue} onPrevCue={this.onPrevCue} />
+                            <PrevCueButton
+                                prevCue={
+                                    current_cue.number === cues[0].number ?
+                                    null :
+                                    prev_cue
+                                }
+                                onPrevCue={this.onPrevCue}
+                                disabled={current_cue.number === cues[0].number}
+                            />
                         </Grid>
                     </Grid>
                     <Grid item container xs={12} spacing={1}>

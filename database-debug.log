@@ -1,0 +1,9 @@
+13:50:00.118 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+13:50:00.205 [main] INFO com.firebase.server.forge.App$ - Listening at 192.168.0.15:9000
+16:08:04.369 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+16:08:04.372 [NamespaceSystem-akka.actor.default-dispatcher-75] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: packing-and-cracking-2021, packing-and-cracking-2021-default-rtdb
+16:08:04.375 [NamespaceSystem-akka.actor.default-dispatcher-79] INFO com.firebase.core.namespace.NamespaceActor - Stopping namespace actor for packing-and-cracking-2021
+16:08:04.375 [NamespaceSystem-akka.actor.default-dispatcher-82] INFO com.firebase.core.namespace.NamespaceActor - Stopping namespace actor for packing-and-cracking-2021-default-rtdb
+16:08:04.376 [NamespaceSystem-akka.actor.default-dispatcher-79] INFO com.firebase.core.namespace.NamespaceActor - Gauges removed for packing-and-cracking-2021
+16:08:04.376 [NamespaceSystem-akka.actor.default-dispatcher-82] INFO com.firebase.core.namespace.NamespaceActor - Gauges removed for packing-and-cracking-2021-default-rtdb
+16:08:04.378 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

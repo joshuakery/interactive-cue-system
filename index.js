@@ -31,14 +31,22 @@ const dotenv = require('dotenv');
 dotenv.config();
 /* Includes for Google Admin SDK */
 const admin = require('firebase-admin');
-const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+/* Non-Emulator Admin SDK */
+// const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
-/* Google Admin SDK initialization */
-/* https://firebase.google.com/docs/admin/setup */
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.GOOGLE_DATABASE_URL,
-});
+
+// /* Google Admin SDK initialization */
+// /* https://firebase.google.com/docs/admin/setup */
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: process.env.GOOGLE_DATABASE_URL,
+// });
+/* end Non-Emulator Admin SDK */
+
+/* Emulator Admin SDK */
+const projectID = process.env.GCLOUD_PROJECT
+admin.initializeApp({ projectId: projectID });
+/* end Emulator Admin SDK */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
