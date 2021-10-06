@@ -22,6 +22,9 @@ class Firebase {
         this.db = app.database();
     }
 
+    //just create some listeners for firebase changes to the current show
+    //and use them in the state to get the right db refs
+
     // *** Auth API ***
 
     doCreateUserWithEmailAndPassword = (email, password) =>
